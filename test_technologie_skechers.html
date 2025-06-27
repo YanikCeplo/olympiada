@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <title>Test - Technologie</title>
+  <style>
+    body { font-family: sans-serif; margin: 2em; }
+    .question { margin-bottom: 20px; }
+    .option { display: block; margin: 5px 0; }
+    .hidden { display: none; }
+    #timer { font-weight: bold; color: red; margin-bottom: 10px; }
+    #result { margin-top: 20px; }
+    .correct { color: green; }
+    .incorrect { color: red; }
+  </style>
+</head>
+<body>
+  <h1>Test - Technologie (SKECHERS)</h1>
+  <div id="quiz"></div>
+  <div id="timer">Čas: 15</div>
+  <button onclick="nextQuestion()" id="nextBtn" disabled>Ďalšia otázka</button>
+  <div id="result" class="hidden"></div>
+  <script>
+    const questions = [{'question': 'Co je technologie Air-Cooled Memory Foam ?', 'options': ['Je to vzduchem chlazená paměťová pěna', 'Odolná podrážka vůdči opotřebení', 'Technologie, která zabezpečuje vodotěsnost'], 'answer': 'Je to vzduchem chlazená paměťová pěna'}, {'question': 'Technologie Skechers, která je specificky zaměřená na podporu klenby chodidla, se jmenuje ?', 'options': ['Skechers Goga Mat', 'Skechers Memory Foam', 'Skechers Arch Fit'], 'answer': 'Skechers Arch Fit'}, {'question': 'Co je to UGGpure™ a jaké jsou jeho hlavní benefity?', 'options': ['Luxusní přírodní vlna vtkaná do trvanlivé podložky - odvádí vlhkost a reguluje teplo, takže udržuje nohy v suchu', 'Směs dvou velmi jemných vláken - vlny a lyocellu - benefitem je maximální pohodlí', 'Typ ovčí kůže, kdy jedna strana je hladká a druhá tvořena ovčí vlnou - je měkká, prodyšná a reguluje teplo'], 'answer': 'Luxusní přírodní vlna vtkaná do trvanlivé podložky - odvádí vlhkost a reguluje teplo, takže udržuje nohy v suchu'}, {'question': 'Co je to Twinface a jaké jsou jeho hlavní benefity? ', 'options': ['Luxusní přírodní vlna vtkaná do trvanlivé podložky - odvádí vlhkost a reguluje teplo, takže udržuje nohy v suchu', 'Typ ovčí kůže, kdy jedna strana je hladká a druhá tvořena ovčí vlnou - je měkká, prodyšná a reguluje teplo', 'Směs dvou velmi jemných vláken - vlny a lyocellu - benefitem je maximální pohodlí'], 'answer': 'Typ ovčí kůže, kdy jedna strana je hladká a druhá tvořena ovčí vlnou - je měkká, prodyšná a reguluje teplo'}, {'question': 'Co je to UGGplush™ a jaké jsou jeho hlavní benefity?', 'options': ['Luxusní přírodní vlna vtkaná do trvanlivé podložky - odvádí vlhkost a reguluje teplo, takže udržuje nohy v suchu', 'Typ ovčí kůže, kdy jedna strana je hladká a druhá tvořena ovčí vlnou - je měkká, prodyšná a reguluje teplo', 'Směs dvou velmi jemných vláken - vlny a lyocellu - benefitem je maximální pohodlí'], 'answer': 'Směs dvou velmi jemných vláken - vlny a lyocellu - benefitem je maximální pohodlí'}, {'question': 'Jaký typ podrážky se běžně používá u modelů UGG a jaké jsou její hlavní benefity?', 'options': ['Treadlite - je velice lehká a odolná a trakce ve špatném počasí', 'EVA pěna - je velice pohodlná a pružná', 'ULTREAD - vysoká stabilita a trakce a trakce ve špatném počasí'], 'answer': 'Treadlite - je velice lehká a odolná a trakce ve špatném počasí'}, {'question': 'Která technologie používa lyocelová vlákna ?', 'options': ['ugg pure', 'twinface', 'ugg plush'], 'answer': 'ugg plush'}, {'question': 'Hluboké tvarování stélky u Birkenstock v oblasti paty zajišťuje ?', 'options': ['Pocit chůze jako na boso', ' Stabilitu chodidla téměř jako v uzavřené obuvi', 'Chrání patu před nárazem'], 'answer': ' Stabilitu chodidla téměř jako v uzavřené obuvi'}, {'question': 'Co je PRIMALOFT?', 'options': ['Mikrovlákno z recyklovatelných materiálů, které lze opakovaně využít a ma izolační vlastnosti', 'Mikrovlákno jako syntetická náhrada husího peří s termoregulačními vlastnostmi', 'Mikrovlákno, které obsahuje ovčí vlnu a\xa0lyocel'], 'answer': 'Mikrovlákno jako syntetická náhrada husího peří s termoregulačními vlastnostmi'}, {'question': 'Čim je významná technológia ANTI-FATIGUE?', 'options': ['Absorbuje nárazy a vrací energii zpět při každém kroku, aby poskytovala pohodlí a komfort po celou dobu nošení', 'Technologie, která má prodyšnou membránu a je navržena tak, aby udržela nohy v suchu a pohodlí v jakýchkoli podmínkách', 'Systém, který je navržen tak, aby umožňoval maximální prodyšnost a ventilaci a odváděl pot mnohem rychleji, nez jiny typ technologie'], 'answer': 'Absorbuje nárazy a vrací energii zpět při každém kroku, aby poskytovala pohodlí a komfort po celou dobu nošení'}, {'question': 'Která 3 vrstvá technologie TMB  zlepšuje pohodlí při chuzi? ', 'options': ['Aerocore', 'Sensorflex', 'Treadelite'], 'answer': 'Sensorflex'}, {'question': 'TimberDry technologie je?', 'options': ['Řešení pro efektivní odvod potu a vlhkosti z bot', 'Vyrobená z 50 % recyklovaných plastových láhví', 'Systém který zajištuje tlumení nárazu'], 'answer': 'Vyrobená z 50 % recyklovaných plastových láhví'}];
+    let current = 0, score = 0, userAnswers = [], timer;
+    const quizDiv = document.getElementById('quiz');
+    const resultDiv = document.getElementById('result');
+    const timerDiv = document.getElementById('timer');
+    const nextBtn = document.getElementById('nextBtn');
+
+    function showQuestion() {
+      nextBtn.disabled = true;
+      quizDiv.innerHTML = '';
+      let q = questions[current];
+      let qDiv = document.createElement('div');
+      qDiv.className = 'question';
+      qDiv.innerHTML = '<strong>Otázka ' + (current + 1) + ':</strong> ' + q.question;
+      quizDiv.appendChild(qDiv);
+      q.options.forEach(option => {
+        let label = document.createElement('label');
+        label.className = 'option';
+        let input = document.createElement('input');
+        input.type = 'radio';
+        input.name = 'q';
+        input.value = option;
+        input.onchange = () => {
+          nextBtn.disabled = false;
+          clearInterval(timer);
+        };
+        label.appendChild(input);
+        label.appendChild(document.createTextNode(option));
+        quizDiv.appendChild(label);
+      });
+      startTimer();
+    }
+
+    let timeLeft = 15;
+    function startTimer() {
+      timeLeft = 15;
+      timerDiv.textContent = 'Čas: ' + timeLeft;
+      timer = setInterval(() => {
+        timeLeft--;
+        timerDiv.textContent = 'Čas: ' + timeLeft;
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          nextBtn.disabled = false;
+        }
+      }, 1000);
+    }
+
+    function nextQuestion() {
+      let selected = document.querySelector('input[name="q"]:checked');
+      let answer = selected ? selected.value : null;
+      userAnswers.push(answer);
+      current++;
+      if (current < questions.length) {
+        showQuestion();
+      } else {
+        showResult();
+      }
+    }
+
+    function showResult() {
+      quizDiv.classList.add('hidden');
+      timerDiv.classList.add('hidden');
+      nextBtn.classList.add('hidden');
+      let html = '<h2>Výsledky:</h2>';
+      questions.forEach((q, i) => {
+        let user = userAnswers[i] || "Žiadna odpoveď";
+        let correct = q.answer;
+        let cls = (user === correct) ? "correct" : "incorrect";
+        html += `<p><strong>${i + 1}. ${q.question}</strong><br><span class="${cls}">Tvoja odpoveď: ${user}</span><br>Správna odpoveď: ${correct}</p>`;
+      });
+      resultDiv.innerHTML = html;
+      resultDiv.classList.remove('hidden');
+    }
+
+    document.addEventListener("keydown", function(e) {
+      if (e.key === "Enter" && !nextBtn.disabled) {
+        nextQuestion();
+      }
+    });
+
+    showQuestion();
+  </script>
+</body>
+</html>
